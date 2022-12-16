@@ -32,24 +32,6 @@ import Layout from '@/layout'
  */
 export const constantRoutes = [
   {
-    path: '/login',
-    component: () => import('@/views/login/index'),
-    hidden: true
-  },
-
-  {
-    path: '/register',
-    component: () => import('@/views/register/index'),
-    hidden: true
-  },
-
-  {
-    path: '/bbs',
-    component: () => import('@/views/bbs/index'),
-    hidden: true
-  },
-
-  {
     path: '/401',
     component: () => import('@/views/401'),
     hidden: true
@@ -58,6 +40,12 @@ export const constantRoutes = [
   {
     path: '/404',
     component: () => import('@/views/404'),
+    hidden: true
+  },
+  //申请码页面
+  {
+    path: '/applyCode',
+    component: () => import('@/views/applyCode/index'),
     hidden: true
   },
   //模板配置页面
@@ -69,34 +57,8 @@ export const constantRoutes = [
   //首页修改
   {
     path: '/',
-    component: () => import('@/views/send/index'),
+    component: () => import('@/views/config/index'),
   },
-  // {
-  //   path: '/',
-  //   component: Layout,
-  //   redirect: '/dashboard',
-  //   children: [{
-  //     path: 'dashboard',
-  //     name: 'Dashboard',
-  //     component: () => import('@/views/dashboard/index'),
-  //     meta: { title: 'Dashboard', icon: 'dashboard' }
-  //   }]
-  // },
-  {
-    path: '/user',
-    component: Layout,
-    hidden: true,
-    redirect: 'noredirect',
-    children: [
-      {
-        path: 'center',
-        component: (resolve) => require(['@/views/user/center'], resolve),
-        name: '个人中心',
-        meta: { title: '个人中心' }
-      }
-    ]
-  }
-
 ]
 
 /**
@@ -105,19 +67,6 @@ export const constantRoutes = [
  */
 export const asyncRoutes = [
 
-  {
-    path: '/role',
-    component: Layout,
-    redirect: 'noredirect',
-    children: [
-      {
-        path: '/role',
-        component: (resolve) => require(['@/views/role'], resolve),
-        name: '角色管理',
-        meta: { title: '角色管理', icon: 'role', noCache: true }
-      }
-    ]
-  },
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
 ]
