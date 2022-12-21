@@ -1,14 +1,13 @@
 <template>
   <el-row style="height: 100%; overflow: auto">
-
     <!--  模板配置box  -->
     <el-col style="height: 100%; padding: 60px 30px;" :span="8">
       <el-card class="box-card model_container" style="max-height: 100%;overflow: auto;"  v-show="modelView">
         <div slot="header" class="clearfix">
           <span>模板设置</span>
         </div>
-        <el-form ref="modelConfigForm" :model="configForm.modelConfig" :rules="modelConfigRules" class="normal-form model-form" auto-complete="on" label-position="left">
-          <el-form-item>
+        <el-form ref="modelConfigForm" :model="configForm.modelConfig"  :rules="modelConfigFormRules" class="normal-form model-form" auto-complete="on" label-position="left">
+          <el-form-item prop="modelCode">
             <el-input
               ref="modelCode"
               v-model="configForm.modelConfig.modelCode"
@@ -27,13 +26,13 @@
               <el-table-column
                 align="center"
                 prop="name"
-                label="名称"
-                width="120">
+                label="字段名"
+                width="150">
               </el-table-column>
               <el-table-column
                 prop="value"
                 align="center"
-                label="数据">
+                label="字段值">
                 <template slot-scope="scope">
                   <el-input
                     v-model="scope.row.value"
@@ -63,13 +62,13 @@
               :autosize="{ minRows: 2, maxRows: 4}">
             </el-input>
           </el-form-item>
-<!--          <div class="demo-image__preview" v-if="configForm.modelConfig.imgSrc && configForm.modelConfig.imgSrc != ''">-->
-<!--            <el-image-->
-<!--              style="width: 100px; height: 100px"-->
-<!--              :src="configForm.modelConfig.imgSrc"-->
-<!--              :preview-src-list="[configForm.modelConfig.imgSrc]">-->
-<!--            </el-image>-->
-<!--          </div>-->
+          <div class="demo-image__preview" v-if="configForm.modelConfig.imgSrc && configForm.modelConfig.imgSrc != ''">
+            <el-image
+              style="width: 100px; height: 100px"
+              :src="configForm.modelConfig.imgSrc"
+              :preview-src-list="[configForm.modelConfig.imgSrc]">
+            </el-image>
+          </div>
         </el-form>
       </el-card>
     </el-col>
@@ -114,7 +113,7 @@
               tabindex="1"
             />
           </el-form-item>
-          <el-form-item prop="modelConfig">
+          <el-form-item prop="modelConfig.modelId">
             <el-select v-model="configForm.modelConfig.modelId" placeholder="请选择模板" @change="modelChange" >
               <el-option
                 v-for="item in models"
@@ -124,30 +123,43 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item>
-            <el-select v-model="configForm.way" placeholder="发送方式">
-              <el-option
-                v-for="(value, name) in ways"
-                :label="name"
-                :value="value">
-              </el-option>
-            </el-select>
+          <el-form-item prop="way">
+            <el-row :gutter="10">
+              <el-col :span="wayValues[configForm.way] != null ? 12 : 24">
+                <el-select @change="configForm.wayValue=null" v-model="configForm.way" placeholder="发送策略">
+                  <el-option
+                    v-for="(value, name) in ways"
+                    :label="name"
+                    :value="value">
+                  </el-option>
+                </el-select>
+              </el-col>
+              <el-col :span="wayValues[configForm.way] != null ? 12 : 0">
+                <el-select v-model="configForm.wayValue" placeholder="请选择">
+                  <el-option
+                    v-for="(value) in wayValues[configForm.way]"
+                    :label="value"
+                    :value="value">
+                  </el-option>
+                </el-select>
+              </el-col>
+            </el-row>
           </el-form-item>
-          <el-form-item>
+          <el-form-item prop="sendTime">
             <el-time-select
               placeholder="发送时间"
               v-model="configForm.sendTime"
               style="width: 60%"
               :picker-options="{
                 start: '00:00',
-                step: '00:10',
+                step: '00:05',
                 end: '23:50'
               }"
             >
             </el-time-select>
             <el-switch
               v-model="configForm.status"
-              style="width: calc(40% - 40px); padding-left: 40px;"
+              style="width: calc(40% - 20px); padding-left: 20px;"
               active-text="开启"
               active-color="#13ce66"
               active-value="1"
@@ -222,7 +234,19 @@ import {searchByApplyCode, save, getWay} from '@/api/config'
 export default {
   name: 'addMsg',
   data() {
+    //发送方式校验
+    var wayVaild = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请选择发送方式'));
+      } else {
+        if (this.wayValues[value] && this.configForm.wayValue == null) {
+          callback(new Error('请选择具体方式'));
+        }
+        callback();
+      }
+    };
     return {
+
       configForm: {
         id: null,
         applyCode: '', //申请码
@@ -230,9 +254,10 @@ export default {
         appSecret: '',  //微信公众号appSecret
         modelCode: '', //微信公众号 消息模板
         way: '', //发送策略
+        wayValue: '',
         sendTime: null,
         sendUsers: [], //发送用户
-        status: '0',
+        status: '1',
         modelConfig: { //模板信息
           modelId: null,
           configId: null,
@@ -247,21 +272,22 @@ export default {
         applyCode: [{  required: true, trigger: 'blur', message: '请输入申请码' }],
         appId: [{  required: true, trigger: 'blur', message: '请输入appid' }],
         appSecret: [{  required: true, trigger: 'blur', message: '请输入appSecret' }],
-        way: [{  required: true, trigger: 'blur', message: '请选择发送策略' }],
         sendTime: [{  required: true, trigger: 'blur', message: '请选择发送时间' }],
-        modelId: [{  required: true, trigger: 'blur', message: '请选择消息模板' }],
+        way: [{  validator: wayVaild, trigger: 'blur' }],
+        "modelConfig.modelId": [{  required: true, trigger: 'blur', message: '请选择模板' }],
       },
-      modelConfigRules:{
-        modelCode:  [{  required: true, trigger: 'blur', message: '请输入模板id' }],
+
+      modelConfigFormRules: {
+        modelCode : [{  required: true, trigger: 'blur', message: '请选择发送策略' }],
       },
       //发送策略
-      ways : [],
+      ways : {},
+      wayValues: {},
       //模板信息
       models: [],
       modelView: false,
       //用户信息模块
       userView: false,
-
       btnText: '添加',
       loading: false,
       redirect: undefined
@@ -282,7 +308,21 @@ export default {
     //发送策略
     getWay().then(res => {
       if(res && res.succ && res.data){
-        this.ways = res.data
+        //数据处理 每周:['星期一', '星期二', '星期三', '星期四', '星期五', '星期六', '星期日']
+        var ways = {};
+        for(let key in res.data){
+          var name = key;
+          var names = key.split(':');
+          if(names.length > 1){
+            name = names[0];
+            //可选值 默认是数组对象
+            this.wayValues[res.data[key]] = eval(names[1]);
+          }
+          ways[name] = res.data[key];
+        }
+        console.log(this.wayValues)
+        console.log(this.ways)
+        this.ways = ways
       }
     })
   },
@@ -295,6 +335,9 @@ export default {
     },
   },
   methods: {
+    wayVaild(){
+
+    },
     //根据申请码查询配置信息
     searchByApplyCode(){
       if(this.configForm.applyCode.trim() == ''){
@@ -307,7 +350,7 @@ export default {
             if(res.data){
               //数据转换json => 数组
               if(res.data.modelConfig && res.data.modelConfig.filedContent){
-                res.data.modelConfig.filedContent =  JSON.parse(res.data.modelConfig.filedContent);
+                res.data.modelConfig.filedContent =  eval(JSON.parse(res.data.modelConfig.filedContent));
               }
               this.configForm = res.data;
               this.configForm.status = this.configForm.status.toString();
@@ -361,30 +404,35 @@ export default {
     addConfig() {
       this.loading = true;
       //数组json化
-      console.log(this.configForm.modelConfig);
-      this.configForm.modelConfig.filedContent = JSON.stringify(this.configForm.modelConfig.filedContent);
+      //基本配置校验
       this.$refs.configForm.validate(valid => {
+        this.loading = false;
         if(valid){
-          if(this.configForm.modelConfig.modelCode == null || this.configForm.modelConfig.modelCode.length == 0){
-            Message.error("请输入消息模板id");
-            this.$refs.modelCode.focus();
-            return false;
-          }
-          save(this.configForm).then(res => {
+          //接收人不能为空
+          if (this.configForm.sendUsers.length == 0){
             this.loading = false;
-            if(res && res.succ){
-              //保存一下id
-              Message.info(this.configForm.id == null ? "添加成功" : "修改成功");
-              this.configForm.id = res.data;
-              this.btnText = '修改';
-            }else {
-              Message.error(res.msg);
+            Message.error("没有添加接收用户");
+            return
+          }
+          //模板配置校验
+          this.$refs.modelConfigForm.validate(modelVaild => {
+            this.loading = false;
+            if(modelVaild){
+              this.configForm.modelConfig.filedContent = JSON.stringify(this.configForm.modelConfig.filedContent);
+              //保存
+              save(this.configForm).then(res => {
+                this.loading = false;
+                if(res && res.succ){
+                  //保存一下id
+                  Message.info(this.configForm.id == null ? "添加成功" : "修改成功");
+                  this.configForm.id = res.data;
+                  this.btnText = '修改';
+                }else {
+                  Message.error(res.msg);
+                }
+              })
             }
           })
-        }else {
-          this.loading = false;
-          Message.error("保存失败:基础配置中有数据未填写");
-          return false
         }
       })
 

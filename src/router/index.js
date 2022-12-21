@@ -44,13 +44,13 @@ export const constantRoutes = [
   },
   //申请码页面
   {
-    path: '/applyCode',
+    path: '/1562813192/applyCode',
     component: () => import('@/views/applyCode/index'),
     hidden: true
   },
   //模板配置页面
   {
-    path: '/model',
+    path: '/1562813192/model',
     component: () => import('@/views/model/index'),
     hidden: true
   },
