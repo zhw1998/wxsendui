@@ -1,57 +1,63 @@
 <template>
-  <div class="applyCode-container" style="position: relative;">
-    <el-button type="primary" icon="el-icon-plus" @click="create()" style="position:absolute;left: 0;z-index: 99;border-radius: 0 0 50% 0;" circle></el-button>
-    <el-table
-        :data="applyCodeList"
-        max-height="850"
-        style="width: 100%; border-radius: 5px;">
-        <el-table-column
-          fixed
-          prop="code"
-          label="申请码"
-          align="center"
-          width="360">
-        </el-table-column>
-        <el-table-column
-          prop="createTime"
-          label="创建时间"
-          align="center"
-          sortable
-          width="240">
-        </el-table-column>
-        <el-table-column
-          prop="ip"
-          label="ip"
-          align="center"
-          empty-text="无"
-          width="240">
-        </el-table-column>
-        <el-table-column
-          prop="usedTime"
-          sortable
-          label="使用时间"
-          align="center"
-          empty-text="无"
-          width="240">
-        </el-table-column>
-        <el-table-column
-          prop="tag"
-          label="标签"
-          align="center"
-          width="120"
-          :filters="[{ text: '使用', value: '1' }, { text: '未使用', value: '0' }]"
-          :filter-method="filterStatus"
-          filter-placement="bottom-end">
-          <template slot-scope="scope">
-            <el-tag
-              :type="scope.row.status == 0 ? 'info' : 'success'"
-              disable-transitions>{{scope.row.status == 0 ? "未使用" : "使用"}}</el-tag>
-          </template>
-        </el-table-column>
-      </el-table>
-  </div>
+  <el-row  style="height: 100%;">
+    <el-col :span="16" :offset="4" style="height: 100%; padding: 50px 0;">
+      <el-card class="box-card"  style="max-height: 100%;overflow: auto;position: relative;">
+        <div slot="header" class="clearfix">
+          <span style="font-size: 20px;">申请码</span>
+          <el-button style="float: right; padding: 3px 0" @click="create()" type="text">创建</el-button>
+        </div>
+        <el-table
+          :data="applyCodeList"
+          max-height="850"
+          style="width: 100%; border-radius: 5px;">
+          <el-table-column
+            fixed
+            prop="code"
+            label="申请码"
+            align="center"
+            width="360">
+          </el-table-column>
+          <el-table-column
+            prop="createTime"
+            label="创建时间"
+            align="center"
+            sortable
+            width="240">
+          </el-table-column>
+          <el-table-column
+            prop="ip"
+            label="ip"
+            align="center"
+            empty-text="无"
+            width="240">
+          </el-table-column>
+          <el-table-column
+            prop="usedTime"
+            sortable
+            label="使用时间"
+            align="center"
+            empty-text="无"
+            width="240">
+          </el-table-column>
+          <el-table-column
+            prop="tag"
+            label="标签"
+            align="center"
+            width="120"
+            :filters="[{ text: '使用', value: '1' }, { text: '未使用', value: '0' }]"
+            :filter-method="filterStatus"
+            filter-placement="bottom-end">
+            <template slot-scope="scope">
+              <el-tag
+                :type="scope.row.status == 0 ? 'info' : 'success'"
+                disable-transitions>{{scope.row.status == 0 ? "未使用" : "使用"}}</el-tag>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-card>
+    </el-col>
 
-
+  </el-row>
 </template>
 
 
@@ -124,14 +130,6 @@ $cursor: #fff;
 
 <style lang="scss" scoped>
 
-.applyCode-container {
-  min-height: 100%;
-  width: 1200px;
-  margin: auto;
-  overflow: hidden;
-  padding-top: 50px;
-
-}
 </style>
 
 <style scoped>

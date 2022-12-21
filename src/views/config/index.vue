@@ -1,14 +1,85 @@
 <template>
-  <el-row>
+  <el-row style="height: 100%; overflow: auto">
+
+    <!--  模板配置box  -->
+    <el-col style="height: 100%; padding: 60px 30px;" :span="8">
+      <el-card class="box-card model_container" style="max-height: 100%;overflow: auto;"  v-show="modelView">
+        <div slot="header" class="clearfix">
+          <span>模板设置</span>
+        </div>
+        <el-form ref="modelConfigForm" :model="configForm.modelConfig" :rules="modelConfigRules" class="normal-form model-form" auto-complete="on" label-position="left">
+          <el-form-item>
+            <el-input
+              ref="modelCode"
+              v-model="configForm.modelConfig.modelCode"
+              placeholder="公众号模板id"
+              name="modelCode"
+              type="text"
+            />
+          </el-form-item>
+          <el-form-item v-if="configForm.modelConfig.filedContent != '' || configForm.modelConfig.filedContent.length > 0">
+            <el-table
+              :data="configForm.modelConfig.filedContent"
+              border
+              :header-cell-style="{padding:0}"
+              max-height="400"
+              style="width: 100%; border-radius: 5px;">
+              <el-table-column
+                align="center"
+                prop="name"
+                label="名称"
+                width="120">
+              </el-table-column>
+              <el-table-column
+                prop="value"
+                align="center"
+                label="数据">
+                <template slot-scope="scope">
+                  <el-input
+                    v-model="scope.row.value"
+                    placeholder="请输入字段值"
+                    prop="scope.row.value"
+                    :disabled="scope.row.value == '无'"
+                  ></el-input>
+                </template>
+              </el-table-column>
+              <el-table-column
+                prop="color"
+                align="center"
+                label="字体颜色"
+                width="100">
+                <template slot-scope="scope">
+                  <el-color-picker style="width: 100%" v-model="scope.row.color"></el-color-picker>
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-form-item>
+          <el-form-item title="请将此内容复制并且粘贴到新建的消息模板中">
+            <el-input
+              type="textarea"
+              tabindex="1"
+              placeholder="模板内容"
+              v-model="configForm.modelConfig.templateContent"
+              :autosize="{ minRows: 2, maxRows: 4}">
+            </el-input>
+          </el-form-item>
+<!--          <div class="demo-image__preview" v-if="configForm.modelConfig.imgSrc && configForm.modelConfig.imgSrc != ''">-->
+<!--            <el-image-->
+<!--              style="width: 100px; height: 100px"-->
+<!--              :src="configForm.modelConfig.imgSrc"-->
+<!--              :preview-src-list="[configForm.modelConfig.imgSrc]">-->
+<!--            </el-image>-->
+<!--          </div>-->
+        </el-form>
+      </el-card>
+    </el-col>
     <!--  基础配置box  -->
-    <el-col :span="8">
-      <div class="container config_container">
+    <el-col style="height: 100%; padding: 60px 30px;" :span="8">
+      <el-card class="box-card config_container"  style="max-height: 100%;overflow: auto;">
+        <div slot="header" class="clearfix">
+          <span>基本配置</span>
+        </div>
         <el-form ref="configForm" :model="configForm" :rules="configFormRules" class="normal-form login-form" auto-complete="on" label-position="left">
-
-          <div class="title-container">
-            <h3 class="title">基础配置</h3>
-          </div>
-
           <el-form-item prop="applyCode">
             <el-input
               ref="applyCode"
@@ -54,12 +125,11 @@
             </el-select>
           </el-form-item>
           <el-form-item>
-            <el-select v-model="configForm.modelConfig.way" placeholder="发送策略">
+            <el-select v-model="configForm.way" placeholder="发送方式">
               <el-option
                 v-for="(value, name) in ways"
                 :label="name"
-                :value="value"
-                :disabled="false">
+                :value="value">
               </el-option>
             </el-select>
           </el-form-item>
@@ -86,78 +156,25 @@
               inactive-color="#eee">
             </el-switch>
           </el-form-item>
-          <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="addConfig">添加</el-button>
+          <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="addConfig">{{btnText}}</el-button>
         </el-form>
-      </div>
-    </el-col>
-    <!--  模板配置box  -->
-    <el-col :span="8">
-      <div class="container model_container"  v-show="modelView">
-        <el-form ref="modelConfigForm" :model="configForm.modelConfig" :rules="modelConfigRules" class="normal-form model-form" auto-complete="on" label-position="left">
-          <div class="title-container">
-            <h3 class="title">模板配置</h3>
-          </div>
-          <el-form-item>
-            <el-input
-              ref="modelCode"
-              v-model="configForm.modelConfig.modelCode"
-              placeholder="公众号模板id"
-              name="modelCode"
-              type="text"
-            />
-          </el-form-item>
-          <el-form-item v-if="configForm.modelConfig.filedContent != '' || configForm.modelConfig.filedContent.length > 0">
-            <el-table
-              :data="configForm.modelConfig.filedContent"
-              border
-              :header-cell-style="{padding:0}"
-              style="width: 100%; border-radius: 5px;">
-              <el-table-column
-                align="center"
-                prop="name"
-                label="字段名"
-                width="150">
-              </el-table-column>
-              <el-table-column
-                prop="value"
-                align="center"
-                label="value">
-                <template slot-scope="scope">
-                  <el-input
-                    v-model="scope.row.value"
-                    placeholder="请输入字段值"
-                    prop="scope.row.value"
-                  ></el-input>
-                </template>
-              </el-table-column>
-            </el-table>
-          </el-form-item>
-          <el-form-item>
-            <el-input
-              type="textarea"
-              tabindex="1"
-              placeholder="模板内容"
-              title="复制粘贴到您新建的消息模板中"
-              v-model="configForm.modelConfig.templateContent"
-              :disabled="true">
-            </el-input>
-          </el-form-item>
-        </el-form>
-      </div>
+      </el-card>
     </el-col>
     <!--  用户配置box  -->
-    <el-col :span="8">
-      <div class="container user_container"  v-show="userView">
-        <div class="title-container">
-          <h3 class="title">发送人</h3>
+    <el-col style="height: 100%; padding: 60px 30px;" :span="8">
+      <el-card class="box-card user_container" style="max-height: 100%;overflow: auto;"  v-show="userView">
+        <div slot="header" class="clearfix">
+          <span>接收人</span>
+          <el-button style="float: right; padding: 3px 0" @click="addUser()" type="text">新增</el-button>
         </div>
         <div style="position: relative">
-          <el-button type="primary" icon="el-icon-plus" @click="addUser()" style="position:absolute;right: 0;z-index: 99;border-radius: 0 0 0 50%;" circle></el-button>
           <el-table
             :data="configForm.sendUsers"
             border
+            max-height="700"
             style="width: 100%; border-radius: 5px;">
             <el-table-column
+              fixed
               align="center"
               prop="userName"
               label="用户名"
@@ -184,15 +201,14 @@
             </el-table-column>
             <el-table-column
               fixed="right"
-              label="操作"
-              width="80">
+              width="60">
               <template slot-scope="scope">
                 <el-button @click="userDelete(scope.$index)" type="text" size="small">删除</el-button>
               </template>
             </el-table-column>
           </el-table>
         </div>
-      </div>
+      </el-card>
     </el-col>
   </el-row>
 
@@ -208,6 +224,7 @@ export default {
   data() {
     return {
       configForm: {
+        id: null,
         applyCode: '', //申请码
         appId: '',  //微信公众号appid
         appSecret: '',  //微信公众号appSecret
@@ -215,12 +232,14 @@ export default {
         way: '', //发送策略
         sendTime: null,
         sendUsers: [], //发送用户
-        status: 0,
+        status: '0',
         modelConfig: { //模板信息
           modelId: null,
           configId: null,
           modelCode: '',
           filedContent: [],
+          imgSrc: '',
+          templateContent:'',
         },
       },
       //主配置检验规则
@@ -243,6 +262,7 @@ export default {
       //用户信息模块
       userView: false,
 
+      btnText: '添加',
       loading: false,
       redirect: undefined
     }
@@ -277,27 +297,51 @@ export default {
   methods: {
     //根据申请码查询配置信息
     searchByApplyCode(){
-      Message.error("搜索");
-      if(this.configForm.applyCode.trim() != ''){
-        searchByApplyCode(this.configForm.applyCode).then(res => {
-          console.log(res);
-          if(res && res.succ && res.data){
-
+      if(this.configForm.applyCode.trim() == ''){
+        return
+      }
+      this.loading = true;
+      searchByApplyCode(this.configForm.applyCode).then(res => {
+          this.loading = false;
+          if(res && res.succ){
+            if(res.data){
+              //数据转换json => 数组
+              if(res.data.modelConfig && res.data.modelConfig.filedContent){
+                res.data.modelConfig.filedContent =  JSON.parse(res.data.modelConfig.filedContent);
+              }
+              this.configForm = res.data;
+              this.configForm.status = this.configForm.status.toString();
+              //模板数据
+              this.models.forEach((item) => {
+                if(item.id == this.configForm.modelConfig.modelId){
+                  this.configForm.modelConfig.templateContent = item.templateContent;
+                  this.configForm.modelConfig.imgSrc = item.imgSrc;
+                }
+              })
+              if(this.configForm.modelConfig){
+                //显示模板配置和用户配置模块
+                this.modelView = true;
+                this.userView = true;
+              }
+              this.btnText = '修改';
+            }else {
+              Message.info('没找到');
+            }
           }else {
             Message.info(res.msg || '搜索失败');
           }
         })
-      }
+
     },
     //模板选择事件
     modelChange(){
-      var that = this;
       //显示模板配置和用户配置模块
-      that.modelView = true;
-      that.userView = true;
-      that.models.forEach((item) => {
-        if(item.id == that.configForm.modelConfig.modelId){
-          that.configForm.modelConfig.filedContent = item.filedContent;
+      this.modelView = true;
+      this.userView = true;
+      this.models.forEach((item) => {
+        if(item.id == this.configForm.modelConfig.modelId){
+          this.configForm.modelConfig.filedContent = item.filedContent;
+          this.configForm.modelConfig.templateContent = item.templateContent;
         }
       })
     },
@@ -315,7 +359,9 @@ export default {
     },
     //提交配置
     addConfig() {
+      this.loading = true;
       //数组json化
+      console.log(this.configForm.modelConfig);
       this.configForm.modelConfig.filedContent = JSON.stringify(this.configForm.modelConfig.filedContent);
       this.$refs.configForm.validate(valid => {
         if(valid){
@@ -325,13 +371,18 @@ export default {
             return false;
           }
           save(this.configForm).then(res => {
+            this.loading = false;
             if(res && res.succ){
-              this.searchByApplyCode();
+              //保存一下id
+              Message.info(this.configForm.id == null ? "添加成功" : "修改成功");
+              this.configForm.id = res.data;
+              this.btnText = '修改';
             }else {
               Message.error(res.msg);
             }
           })
         }else {
+          this.loading = false;
           Message.error("保存失败:基础配置中有数据未填写");
           return false
         }
@@ -355,7 +406,7 @@ $cursor: #fff;
 
 /* reset element-ui css */
 
-.container {
+.box-card {
   .el-select, .el-date-editor{
     width: 100%;
     .el-input {
@@ -367,17 +418,15 @@ $cursor: #fff;
 
 <style lang="scss" scoped>
 $light_gray:#eee;
-.container {
-  overflow: hidden;
-  padding-top: 50px;
-  padding: 100px 50px;
+.box-card {
+  overflow: auto;
+  max-height: 100%;
   .normal-form {
     position: relative;
     max-width: 100%;
     margin: 0 auto;
     overflow: hidden;
   }
-
   .tips {
     float: right;
     font-size: 14px;
@@ -394,13 +443,6 @@ $light_gray:#eee;
   .title-container {
     position: relative;
 
-    .title {
-      font-size: 26px;
-      color: $light_gray;
-      margin: 0px auto 40px auto;
-      text-align: center;
-      font-weight: bold;
-    }
   }
 
 }

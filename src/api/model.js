@@ -29,6 +29,14 @@ export function list(){
   })
 }
 
+export function deleteModel(id){
+  return request({
+    url: '/model/delete?id=' + id,
+    method: 'get',
+  })
+}
+
+
 export function listFiled(){
   return request({
     url: '/model/listFiled',
