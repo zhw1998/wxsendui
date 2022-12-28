@@ -44,13 +44,13 @@
             label="标签"
             align="center"
             width="120"
-            :filters="[{ text: '使用', value: '1' }, { text: '未使用', value: '0' }]"
+            :filters="[{ text: '未使用', value: '0' }, { text: '已申请', value: '2' }, { text: '使用', value: '1' } ]"
             :filter-method="filterStatus"
             filter-placement="bottom-end">
             <template slot-scope="scope">
               <el-tag
-                :type="scope.row.status == 0 ? 'info' : 'success'"
-                disable-transitions>{{scope.row.status == 0 ? "未使用" : "使用"}}</el-tag>
+                :type="scope.row.status == 0 ? 'info' : scope.row.status == 1 ? 'success' : 'warning'"
+                disable-transitions>{{scope.row.status == 0 ? "未使用" : scope.row.status == 1 ? "使用" : "已申请"}}</el-tag>
             </template>
           </el-table-column>
         </el-table>
