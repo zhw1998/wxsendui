@@ -44,13 +44,13 @@ export const constantRoutes = [
   },
   //申请码页面
   {
-    path: '/1562813192/applyCode',
+    path: '/applyCode',
     component: () => import('@/views/applyCode/index'),
     hidden: true
   },
   //模板配置页面
   {
-    path: '/1562813192/model',
+    path: '/model',
     component: () => import('@/views/model/index'),
     hidden: true
   },
@@ -74,7 +74,8 @@ export const asyncRoutes = [
 const createRouter = () => new Router({
   mode: 'history', // require service support
   scrollBehavior: () => ({ y: 0 }),
-  routes: constantRoutes
+  routes: constantRoutes,
+  base: "/"
 })
 
 export const router = createRouter()

@@ -10,7 +10,7 @@
           <el-form-item prop="modelCode">
             <el-input
               ref="modelCode"
-              v-model="configForm.modelConfig.modelCode"
+              v-model.trim="configForm.modelConfig.modelCode"
               placeholder="公众号模板id"
               name="modelCode"
               type="text"
@@ -82,7 +82,7 @@
           <el-form-item prop="applyCode">
             <el-input
               ref="applyCode"
-              v-model="configForm.applyCode"
+              v-model.trim="configForm.applyCode"
               placeholder="申请码"
               name="applyCode"
               type="text"
@@ -95,7 +95,7 @@
           <el-form-item prop="appId">
             <el-input
               ref="appId"
-              v-model="configForm.appId"
+              v-model.trim="configForm.appId"
               placeholder="appId"
               name="appId"
               type="text"
@@ -106,7 +106,7 @@
           <el-form-item prop="appSecret">
             <el-input
               ref="appSecret"
-              v-model="configForm.appSecret"
+              v-model.trim="configForm.appSecret"
               placeholder="appSecret"
               name="appSecret"
               type="text"
@@ -205,7 +205,7 @@
               align="center">
               <template slot-scope="scope">
                 <el-input
-                  v-model="scope.row.userOpenId"
+                  v-model.trim="scope.row.userOpenId"
                   prop="scope.row.userOpenId"
                   placeholder="请输入用户openId"
                 ></el-input>
@@ -278,7 +278,7 @@ export default {
       },
 
       modelConfigFormRules: {
-        modelCode : [{  required: true, trigger: 'blur', message: '请选择发送策略' }],
+        modelCode : [{  required: true, trigger: 'blur', message: '请输入模版ID' }],
       },
       //发送策略
       ways : {},
@@ -416,21 +416,25 @@ export default {
           }
           //模板配置校验
           this.$refs.modelConfigForm.validate(modelVaild => {
-            this.loading = false;
             if(modelVaild){
               this.configForm.modelConfig.filedContent = JSON.stringify(this.configForm.modelConfig.filedContent);
               //保存
               save(this.configForm).then(res => {
-                this.loading = false;
                 if(res && res.succ){
                   //保存一下id
                   Message.info(this.configForm.id == null ? "添加成功" : "修改成功");
-                  this.configForm.id = res.data;
-                  this.btnText = '修改';
+                  // this.configForm.id = res.data;
+                  //刷新页面
+                  setTimeout(function (){
+                    window.location.reload();
+                  }, 1000);
                 }else {
+                  this.loading = false;
                   Message.error(res.msg);
                 }
               })
+            }else {
+              this.loading = false;
             }
           })
         }

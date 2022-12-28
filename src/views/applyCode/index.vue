@@ -1,6 +1,6 @@
 <template>
   <el-row  style="height: 100%;">
-    <el-col :span="16" :offset="4" style="height: 100%; padding: 50px 0;">
+    <el-col :span="20" :offset="2" style="height: 100%; padding: 50px 0;">
       <el-card class="box-card"  style="max-height: 100%;overflow: auto;position: relative;">
         <div slot="header" class="clearfix">
           <span style="font-size: 20px;">申请码</span>
@@ -21,23 +21,34 @@
             prop="createTime"
             label="创建时间"
             align="center"
-            sortable
+            sortable>
+          </el-table-column>
+          <el-table-column
+            prop="userId"
+            label="申请用户"
+            align="center"
+            empty-text="无"
             width="240">
+          </el-table-column>
+          <el-table-column
+            prop="applyTime"
+            sortable
+            label="申请时间"
+            align="center"
+            empty-text="无">
           </el-table-column>
           <el-table-column
             prop="ip"
             label="ip"
             align="center"
-            empty-text="无"
-            width="240">
+            empty-text="无">
           </el-table-column>
           <el-table-column
             prop="usedTime"
             sortable
             label="使用时间"
             align="center"
-            empty-text="无"
-            width="240">
+            empty-text="无">
           </el-table-column>
           <el-table-column
             prop="tag"
